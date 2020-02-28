@@ -1,0 +1,37 @@
+---
+title: "Drone Recapture Simulation"
+author: "Rex Macey"
+date: "2/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = "")
+```
+
+```{r initialize}
+source("droneRecaptureSimulation.r")
+```
+
+## Introduction
+
+Do drones return to the same DCA?  That question leads us to estimate the probability of recapturing a drone assuming they do. If a researcher captures, marks and releases drones in a DCA, what is the probability what is the probability she will recapture a drone if she returns on a subsequent day?  
+
+## Assumptions
+
+Number of Drones Per DCA: `r nPerDCA`    
+Number Captured Per Session: `r nCapturedPerSession`    
+Number of Days To Mate:  `r nDaysToMate` (example days 12-32 would be 21)    
+Minutes Flight Time:  `r minutesFlightTime` To travel to and from and stay in DCA    
+Miles To DCA: `r milesToDCA` used to calculate time, probability of a drone being at a DCA  
+Flight MPH: `r flightMPH` used to calculate time, probability of a drone being at a DCA  
+Minutes Rest Time: `r minutesRestTime` used to calculate time, probability of a drone being at a DCA  
+Flights Per Day: `r flightsPerDay` 
+NumberDCAsVisited: `r numberDCAsVisited`
+daysActive <- c(1,2,3,8,9,10) # Days researcher is actively capturing drones.  Should start at 1. Might skip days for bad weather.
+
+## Intermediate Calculations
+Minutes At DCA: `r minutesAtDCA` per trip from hive
+
+## Simulation Description   
+On first day of simulation there are _`r nPerDCA`_ drones in a DCA.  These drones will be of various ages.  Each drone is assigned a (uniform) random number from 1 to _`r nDaysToMate`_ representing its mating day.  After the last mating day is reached, the drone dies (in simulation, no drones were actually injured in this simulation).  
