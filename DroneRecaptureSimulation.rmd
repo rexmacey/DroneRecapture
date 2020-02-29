@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, comment = "")
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE)
 ```
 
 ```{r initialize}
@@ -15,23 +15,26 @@ source("droneRecaptureSimulation.r")
 
 ## Introduction
 
-Do drones return to the same DCA?  That question leads us to estimate the probability of recapturing a drone assuming they do. If a researcher captures, marks and releases drones in a DCA, what is the probability what is the probability she will recapture a drone if she returns on a subsequent day?  
+A researcher is interested whether drones visit different DCAs.  She plans to visit `r nDCAsVisitedByKeeper` DCAs over 
+`r daysInSimulation` visting on days `r daysActive[daysActive!=0]`. During a visit she will capture bees, paint them with a mark identifying the DCA, and release them.  This simulation attempts to address the question - is she likely to recapture drones at a DCA who were already captured at a different DCA? We use a Monte Carlo simulation.
 
 ## Assumptions
+The number of drones is not a direct input.  To arrive at that figure, we assume about `r nPerDCA` drones will be at a DCA at any point in time.  Drones will visit `r nDCAsVisited` DCAs. The DCA a drone visits is randomly selected.  They visit a DCA for 30 minutes and rest for 15, meaning they are at a DCA two-thirds of the time. Thus to have `r nPerDCA` drones at `r nDCAsVisited` DCAs we will need `r nDrones` drones because `r nDrones` / `r nDCAsVisited` * 2/3 = `r nPerDCA`.  A drone is assumed to have `r nDaysToMate` days to mate (period of fertility).
 
-Number of Drones Per DCA: `r nPerDCA`    
-Number Captured Per Session: `r nCapturedPerSession`    
-Number of Days To Mate:  `r nDaysToMate` (example days 12-32 would be 21)    
-Minutes Flight Time:  `r minutesFlightTime` To travel to and from and stay in DCA    
-Miles To DCA: `r milesToDCA` used to calculate time, probability of a drone being at a DCA  
-Flight MPH: `r flightMPH` used to calculate time, probability of a drone being at a DCA  
-Minutes Rest Time: `r minutesRestTime` used to calculate time, probability of a drone being at a DCA  
-Flights Per Day: `r flightsPerDay` 
-NumberDCAsVisited: `r numberDCAsVisited`
-daysActive <- c(1,2,3,8,9,10) # Days researcher is actively capturing drones.  Should start at 1. Might skip days for bad weather.
 
-## Intermediate Calculations
-Minutes At DCA: `r minutesAtDCA` per trip from hive
+We assume the researcher visits `r nDCAsVisitedByKeeper` DCAs on the days she can (e.g. weather permitting). She captures `r nCapturedPerFlight` drones on each flight of her UAV.  She is able to make 1 flight every 15 minutes.
 
-## Simulation Description   
-On first day of simulation there are _`r nPerDCA`_ drones in a DCA.  These drones will be of various ages.  Each drone is assigned a (uniform) random number from 1 to _`r nDaysToMate`_ representing its mating day.  After the last mating day is reached, the drone dies (in simulation, no drones were actually injured in this simulation).  
+## Simulation Description 
+A day is divided into `r periodsPerDay` periods of 15 minutes. Initially each drone is randomly assigned an age of fertility (from 1 to `r nDaysToMate`).  They are also assigned to a DCA or to rest for each period. They are at a random DCA for 2 periods and rest for 1 period.  
+
+On a day the researcher is active, she divides her attention among the same `r nDCAsVisitedByKeeper` DCAs.  She collects drones. She counts them as recaptured if they have already been marked as having been to a different DCA.  If they are unmarked, they are marked.
+
+At the end of the day, the drones are aged a day.  If the drone is no longer fertile, he is replaced by an unmarked bee who is at the beginning of his period of fertility.
+
+### Results
+The simulation was repeated `r nTrials` times.  The following table summarizes the number of drones recaptured on a given day where recapture is defined as a drone previous captured at a different DCA.
+
+```{r results}
+summary(simResults)
+```
+
